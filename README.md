@@ -2,8 +2,10 @@
 <center><img width=100% src="https://github.com/acessors/ZMemory/blob/main/logo.png?raw=true"/></center>
 ZMemory is a C++ library / template for patching process memory on unix systems (including android). It's inspired by <a href="https://github.com/MJx0/KittyMemory">KittyMemory</a> and works similar, but the main advantage is that ZMemory can write external processes memory using root permission
 ###  Development progress
-- [x] Basic memory process API (find PID, regions, write and read memory)
-- [x] Basic offset HEX patches
+<br/><input type="checkbox" disabled checked> Basic memory process API (find PID, regions, write and read memory)
+<br/><input type="checkbox" disabled checked> Basic offset HEX patches
+<br/><input type="checkbox" disabled> In-memory value search (simple types, byte arrays)
+<br/><input type="checkbox" disabled> Assembly operand search (using <a href= "https://github.com/capstone-engine/capstone">capstone</a> maybe)
 ### Usage example
 This example patches a method replace values from true to false, example apk from <a href="https://github.com/acessors/Il2Cpp-Exploitation-POC">Il2Cpp Exploitation POC</a> is used.
 ```c++
