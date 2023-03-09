@@ -5,7 +5,7 @@ ZMemory is a C++ library / template for patching process memory on unix systems 
 - [x] Basic memory process API (find PID, regions, write and read memory)
 - [x] Basic offset HEX patches
 - [ ] In-memory value search (simple types, byte arrays)
-- [ ] Assembly operand search (using <a href="https://github.com/capstone-engine/capstone">capstone</a> maybe)
+- [ ] Assembly operand search (using capstone maybe)
 ### Usage example
 This example patches a method replace values from true to false, example apk from <a href="https://github.com/acessors/Il2Cpp-Exploitation-POC">Il2Cpp Exploitation POC</a> is used.
 ```c++
