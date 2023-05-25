@@ -4,34 +4,7 @@
 
 namespace ZMemory {
 
-char *read_file(char *filename) {
-    FILE *file = fopen(filename, "r");
-    long int size = 0;
-    int byte;
-    if (!file) {
-        LOG("ZMemory: readfile() failed to open file %s\n", filename);
-        return NULL; 
-    }
-    while ((byte = fgetc(file)) != EOF) {
-        size++;
-    }
-    rewind(file);
-    char *result = (char *)malloc(size);
-    if (!result) {
-        LOG("ZMemory: readfile() failed to alloc memory %s\n", filename);
-        fclose(file); 
-        return NULL; 
-    }
-    if (fread(result, 1, size, file) != size) {
-        LOG("ZMemory: reafile() failed to read %s\n", filename);
-        fclose(file);
-        return NULL;
-    }
-    fclose(file);
-    return result;
-}
-
-/* this bullshit doesn't even work lol
+/* this doesn't work for large addresses 
 int pwrite(long pid, void * addr, void * stringBuf,
                          size_t size) {
   struct iovec local[1];
@@ -152,22 +125,21 @@ std::vector<Region> get_all_regions(pid_t pid) {
 
 pid_t find_pid(char *pname) {
     struct dirent *pDirent;
-    DIR *pDir = opendir("/proc");
+    DIR *pDir = opendir("/proc/");
     if (pDir == NULL) {
-        LOG("ZMemory: find_pid() failed to open /proc\n", pid);
+        LOG("ZMemory: find_pid() failed to open /proc\n");
         return NULL;
     }
     while ((pDirent = readdir(pDir)) != NULL) {
         char path[64];
+        char cmdline[32];
         sprintf(path, "/proc/%s/cmdline", pDirent->d_name);
-        char *result = read_file(path);
-        if (result && strcmp(result, pname) == 0) {
+        ZUtils::read_file(path, cmdline, 32);
+        if (strcmp(cmdline, pname) == 0) {
             pid_t pid = (pid_t)atoi(pDirent->d_name);
-            free(result);
             closedir(pDir);
             return pid;
         }
-        free(result);
     }
     closedir(pDir);
     return 0;

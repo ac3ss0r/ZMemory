@@ -4,6 +4,8 @@
 #include <string.h>
 
 namespace ZUtils {
+
+   bool read_file(char *filename, char * buffer, int size);
     
     char * b_hex(char * arr, int size);
     
