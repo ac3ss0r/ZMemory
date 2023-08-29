@@ -1,3 +1,4 @@
+#pragma once
 #define DEBUG
 #ifdef DEBUG
 #define LOG(s, ...) printf(s, ##__VA_ARGS__);

@@ -8,9 +8,73 @@
 #include <sys/uio.h>
 #include <vector>
 #include <sys/mman.h>
-#include "ZTypes.h"
-#include "ZDebug.h"
-#include "ZUtils.h"
+
+namespace ZMemory {
+class Region {
+  public:
+	long long startAddress;
+	long long endAddress;
+	size_t length;
+
+	char name[256];
+	char dev[64];
+	char perms[16];
+
+	long long offset; 
+    //int protection;
+	long inode;
+
+	bool read, write, exec;
+
+	Region() : startAddress(0), endAddress(0), length(0), /* protection(0),*/
+			   read(false), write(false), exec(false), offset(0), inode(0) {
+	}
+};
+}
+
+#define DEBUG
+#ifdef DEBUG
+#define LOG(s, ...) printf(s, ##__VA_ARGS__);
+#else
+#define LOG(s, ...) do {} while (0)
+#endif
+
+#include <stdlib.h>
+#include <string.h>
+
+namespace ZUtils {
+
+bool read_file(char *filename, char * buffer, int size) {
+    FILE *file = fopen(filename, "r");
+    if (!file) {
+        // this spams alot while scanning pid 
+        //LOG("ZMemory: readfile() failed to open file %s\n", filename);
+        return false; 
+    }
+    fgets(buffer, size, file);
+    fclose(file);
+    return true;
+}
+
+void b_hex(char * arr, char * out, int size) {
+    for (int i = 0; i < size; i++) {
+        sprintf(out+(i*3), "%02X ",  arr[i]);
+    };
+}
+
+int hex_b(char * hex, char * out) {
+    char trimmed[128] = "";
+    for (int i = 0; i < strlen(hex); i++) {
+        if (hex[i] != ' ')
+            strncat(trimmed, &hex[i], 1);
+    };
+    for (int i = 0; i < strlen(trimmed) / 2; i++) {
+        sscanf(trimmed + (i * 2), "%2hhx", out + i);
+    }
+    return strlen(trimmed) / 2;
+}
+    
+}
 
 namespace ZMemory {
 
@@ -160,4 +224,35 @@ long long find_library_base(pid_t pid, char *name) {
    }
 }
 
-#include "ZPatch.h"
+#include <sys/types.h>
+
+namespace ZMemory {
+class ZPatch {
+  private:
+	pid_t pid;
+	long long addr;
+	int patch_size;
+	char orig_data[128];
+	char data[128];
+	bool state;
+
+  public:
+	ZPatch(pid_t pid, long long addr, char *hex) {
+		this->pid = pid;
+		this->addr = addr;
+		this->state = false;
+		this->patch_size = ZUtils::hex_b(hex, this->data);
+		if (!ZMemory::mem_read(pid, addr, this->orig_data, patch_size)) {
+			LOG("ZMemoryPatch: Failed to backup original bytes.\n");
+		}
+     }
+
+	 bool toggle() {
+			state = !state;
+			bool success = state ? ZMemory::mem_write(pid, addr, data, patch_size) : ZMemory::mem_write(pid, addr, orig_data, patch_size);
+			if (!success)
+				LOG("ZMemoryPatch: Failed to perform a patch\n");
+			return success;
+		}
+};
+}

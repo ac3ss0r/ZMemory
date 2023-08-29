@@ -1,3 +1,3 @@
 echo Building ZMemory...
-g++ source/Sample.cpp ZMemory/source/Z*.cpp  -o sample
-g++ tests/TargetProgram.cpp -o target
+g++ Sample.cpp - o sample
+g++ TargetProgram.cpp -o target

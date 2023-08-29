@@ -10,7 +10,7 @@ ZMemory is a C++ library / template for patching process memory on unix systems 
 
 - [ ] In-memory value search (simple types, byte arrays)
 
-- [ ] ptrace-based ARM/ARM64 method hooking (frida-like, external)
+- [ ] Advanced memory pattern-scanning search
 
 ### Usage example
 This example patches a method replace values from true to false, example apk from <a href="https://github.com/acessors/Il2Cpp-Exploitation-POC">Il2Cpp Exploitation POC</a> is used.
